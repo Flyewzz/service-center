@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Restaurants</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <table border="1">
+        <thead>
+            <th>ID</th>
+            <th>Name</th>
+        </thead>
+        <tbody>
+            <% restaurants.forEach((restaurant) => { %>
+                <tr>
+                    <td><%= restaurant.idRestaurant %></td>
+                    <td><%= restaurant.name %></td>
+                </tr>
+           <% }); %>
+        </tbody>
+    </table>
+</body>
+</html>
