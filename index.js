@@ -26,24 +26,26 @@ app.get('/', function(req, res) {
 res.sendFile(__dirname + '/public/index.html');
 });
 
-app.get('/restaurants', function(req, res) {
+app.post('/createOrder', urlencodedParser, function(req, res) {
+});
+
+app.get('/repairers', function(req, res) {
     const connection = mysql.createConnection({
         host: '127.0.0.1',
         user: 'service',
         password: '135',
         database: 'service',
     });
-    connection.query('SELECT * From Restaurants', (err, rows) => {
+    connection.query(
+        'SELECT * FROM service.Orders o INNER JOIN Repairers R on o.idRepairer = R.idRepairer ' +
+        'AND R.idRepairer = ? INNER JOIN StatusOrder sO ON o.idStatus = sO.idStatus ' +
+        'INNER JOIN deviceviews dv ON o.idView = dv.idView ORDER BY o.idStatus', [req.query.idRepairer], (err, rows) => {
         if (err) {
             console.log("Error " + err);
             throw err;
         }
-        console.log('Connection established');
-        res.render('restaurants', { restaurants: rows }); 
+        res.render('orders', {orders: rows});
     });
-});
-
-app.post('/createOrder', urlencodedParser, function(req, res) {
 });
 
 app.get(function(req, res) {
