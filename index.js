@@ -16,7 +16,7 @@ const app = express();
 // }))
 // app.use(passport.initialize())
 // app.use(passport.session())
-const mysql = require("mysql");
+const db = require("./db");
 const bodyParser = require("body-parser");
 
 // Creating the parser for data application/x-www-form-urlencoded
@@ -28,16 +28,23 @@ app.get("/", function(req, res) {
   res.sendFile(__dirname + "/public/index.html");
 });
 
-app.post("/createOrder", urlencodedParser, function(req, res) {});
+app.post("/createOrder", urlencodedParser, function(req, res) {
+  db.query(
+    "INSERT INTO Orders (idOrder, clientName, email, idView, idRepairer, idStatus, clientNumber, orderStartDate) " +
+      "VALUES (LAST_INSERT_ID(), ?, ?, 1, NULL, 1, ?, CURDATE()) ",
+    [req.body.clientName, req.body.clientEmail, req.body.clientNumber],
+    (err, rows) => {
+      if (err) {
+        console.log("Error " + err);
+        throw err;
+      }
+      res.sendFile(__dirname + '/public/successSendOrder.html');
+    }
+  );
+});
 
 app.get("/repairers", function(req, res) {
-  const connection = mysql.createConnection({
-    host: "127.0.0.1",
-    user: "service",
-    password: "135",
-    database: "service"
-  });
-  connection.query(
+  db.query(
     "SELECT * FROM service.Orders o INNER JOIN Repairers R on o.idRepairer = R.idRepairer " +
       "AND R.idRepairer = ? INNER JOIN StatusOrder sO ON o.idStatus = sO.idStatus " +
       "INNER JOIN deviceviews dv ON o.idView = dv.idView ORDER BY o.idStatus",
