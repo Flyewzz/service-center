@@ -53,29 +53,47 @@ app.post("/createOrder", urlencodedParser, function(req, res) {
   );
 });
 
-app.get("/repairers", function(req, res) {
+app.get("/orders", function(req, res) {
   db.query(
     "SELECT * FROM service.Orders o INNER JOIN Repairers R on o.idRepairer = R.idRepairer " +
       "AND R.idRepairer = ? INNER JOIN StatusOrder sO ON o.idStatus = sO.idStatus " +
-      "INNER JOIN deviceviews dv ON o.idView = dv.idView ORDER BY o.idStatus",
+      "INNER JOIN deviceviews dv ON o.idView = dv.idView ORDER BY o.idStatus, o.clientName",
     [req.query.idRepairer],
     (err, orders) => {
+      db.query(
+        "SELECT * FROM service.Orders o INNER JOIN statusOrder sO ON o.idStatus = sO.idStatus " +
+        "INNER JOIN deviceviews dv ON o.idView = dv.idView WHERE o.idRepairer IS NULL ORDER BY o.orderStartDate DESC",
+        (err, news) => {
+      db.query("SELECT * FROM statusOrder ORDER BY idStatus", (err, statuses) => {
+        res.render("orders", { 
+          orders: orders,
+          unoccupied: news,
+          statuses: statuses,
+          idRepairer: req.query.idRepairer,
+         });
+      });
+    });
+    });
+});
+
+app.post("/changeStatus", urlencodedParser, function(req, res) {
+  var change_request = "UPDATE Orders SET idStatus = ?, idRepairer = " + req.body.idRepairer + " WHERE idOrder = ?";
+  if (req.body.orderStatus == 1) {
+    change_request = "UPDATE Orders SET idStatus = ?, idRepairer = NULL WHERE idOrder = ?"
+  }
+  db.query(
+    change_request,
+    [
+      req.body.orderStatus,
+      req.body.idOrder,
+    ],
+    (err, rows) => {
       if (err) {
         console.log("Error " + err);
         throw err;
       }
-
-      db.query("SELECT * FROM statusOrder ORDER BY idStatus", (err, statuses) => {
-        if (err) {
-          console.log("Error " + err);
-          throw err;
-        }
-        res.render("orders", { 
-          orders: orders, 
-          statuses: statuses,
-         });
-      });
-      
+      console.log('Status #' + req.body.idOrder + ' was successfully changed!');
+      res.json({answer: 'OK',})
     }
   );
 });

@@ -138,7 +138,7 @@
 		<!-- <div class="indexcentertext">
 		<div class="pad"> -->
 				<div class="limiter">
-						<div class="container-table100">
+						<div class="container-table100" >
 							<div class="wrap-table100">
 								<div style="margin-bottom: 50%" class="table100 ver4 m-b-110">
 									<div class="table100-head">
@@ -158,6 +158,26 @@
 									<div class="table100-body js-pscroll">
 										<table>
 											<tbody>
+													<% unoccupied.forEach((unoccupiedOrder) => { %>
+														<tr class="row100 body" style="text-align: center">
+																<td class="cell100 column2"><%= unoccupiedOrder.idOrder %></td>
+																<td class="cell100 column3"><%= unoccupiedOrder.clientName %></td>
+																<td class="cell100 column4"><%= unoccupiedOrder.email %></td>
+																<td class="cell100 column5"><%= unoccupiedOrder.clientNumber %></td>
+																<td class="cell100 column6"><%= unoccupiedOrder.nameView %></td>
+																<td class="cell100 column7">
+																	<select style="color: <%= unoccupiedOrder.colorStatus %>" onchange="changeOrderStatus(this, <%= unoccupiedOrder.idOrder %>)">
+																		<% statuses.forEach((status) => { %>
+																			<% if (unoccupiedOrder.idStatus == status.idStatus) { %>
+																				<option selected value="<%= status.idStatus %>"><%= status.nameStatus %></option>
+		
+																		<%	} else { %>
+																				<option value="<%= status.idStatus %>" style='color: <%= status.colorStatus %>'><%= status.nameStatus %></option>															
+																			<% }}); %>
+																	</select>
+																</td>
+														</tr>
+															<% }); %>
 													<% orders.forEach((order) => { %>
 												<tr class="row100 body" style="text-align: center">
 														<td class="cell100 column2"><%= order.idOrder %></td>
@@ -166,7 +186,7 @@
 														<td class="cell100 column5"><%= order.clientNumber %></td>
 														<td class="cell100 column6"><%= order.nameView %></td>
 														<td class="cell100 column7">
-															<select style="color: <%= order.colorStatus %>">
+															<select style="color: <%= order.colorStatus %>" onchange="changeOrderStatus(this, <%= order.idOrder %>)">
 																<% statuses.forEach((status) => { %>
 																	<% if (order.idStatus == status.idStatus) { %>
 																		<option selected value="<%= status.idStatus %>"><%= status.nameStatus %></option>
@@ -192,12 +212,9 @@
 						<!-- </div>
 					</div> -->
 		<!-- <a href="successSendOrder.html">Copy</a> -->
-		</div>
-
-
-		
-		
-		
+		<div style="margin-bottom: 40%" id="server-message"></div>
+	</div>
+	
 		<div style="display:none;">
 		<!-- <middle> --> 
 		<div id="content">
@@ -433,10 +450,10 @@
 		<div id="footerbottombg">
 		<div id="footerbottom">
 		<div class="fbr"><span id="sTChyXK"></span>
-		<script type="text/javascript">
+		<!-- <script type="text/javascript">
 			sTChyXK.insertAdjacentHTML('beforeEnd', '<a rel="nofollow" href="http://appliancerepair.ucoz.com/panel/?a=ustat&amp;u=appliancerepair&amp;d=d&amp;il=ru" target="_blank" title="uCoz Counter">\
 			<img alt="" src="http://appliancerepair.ucoz.com/stat/'&#32;+&#32;Date.now()&#32;+&#32;'?01'&#32;+&#32;escape(document.referrer)&#32;+&#32;'" height="31" width="88" /></a>');
-		</script>
+		</script> -->
 			</div>
 		</div>
 		</div><!--/U1BFOOTER1Z--> 
@@ -466,5 +483,35 @@
 			</script>
 		<!--===============================================================================================-->
 			<script src="js/main.js"></script>
+
+			<script>
+			function ajaxChangeStatus(sel, idOrder) {
+					$.ajax({ 
+           				url: '/changeStatus',
+           				type: 'POST',
+           				cache: false, 
+           				data: { 
+							    idOrder: idOrder,
+								orderStatus: sel.options[sel.selectedIndex].value, 
+								idRepairer: <%= idRepairer %>,
+						}, 
+           				success: function(data){
+              				$('#server-message').html("<h3 style='color: green;'>Статус заказа #" + idOrder + " успешно изменен!</h3>");
+           				},
+           			    error: function(jqXHR, textStatus, err){
+               				alert('text status '+textStatus+', err '+err);
+           				}
+        });
+     }
+				function changeOrderStatus(sel, idOrder) {
+					<% statuses.forEach((status) => { %>
+						if (sel.options[sel.selectedIndex].value == '<%= status.idStatus %>') {
+							sel.style.color = '<%= status.colorStatus %>';
+							ajaxChangeStatus(sel, idOrder);
+							return;
+						}
+					<% }); %>
+				}
+			</script>
 </body>
 </html>
