@@ -59,12 +59,23 @@ app.get("/repairers", function(req, res) {
       "AND R.idRepairer = ? INNER JOIN StatusOrder sO ON o.idStatus = sO.idStatus " +
       "INNER JOIN deviceviews dv ON o.idView = dv.idView ORDER BY o.idStatus",
     [req.query.idRepairer],
-    (err, rows) => {
+    (err, orders) => {
       if (err) {
         console.log("Error " + err);
         throw err;
       }
-      res.render("orders", { orders: rows });
+
+      db.query("SELECT * FROM statusOrder ORDER BY idStatus", (err, statuses) => {
+        if (err) {
+          console.log("Error " + err);
+          throw err;
+        }
+        res.render("orders", { 
+          orders: orders, 
+          statuses: statuses,
+         });
+      });
+      
     }
   );
 });
