@@ -139,7 +139,7 @@
 		<div class="pad"> -->
 				<div class="limiter">
 						<div class="container-table100" >
-							<div class="wrap-table100">
+							<div class="wrap-table100" >
 								<div style="margin-bottom: 50%" class="table100 ver4 m-b-110">
 									<div class="table100-head">
 										<table>
@@ -157,7 +157,7 @@
 									</div>
 									<div class="table100-body js-pscroll">
 										<table>
-											<tbody>
+											<tbody id="orderTable">
 													<% unoccupied.forEach((unoccupiedOrder) => { %>
 														<tr class="row100 body" style="text-align: center">
 																<td class="cell100 column2"><%= unoccupiedOrder.idOrder %></td>
@@ -483,8 +483,29 @@
 			</script>
 		<!--===============================================================================================-->
 			<script src="js/main.js"></script>
-
+			<script src="socket.io.js"></script>
 			<script>
+				var socket = io.connect('192.168.43.4:3000');
+				socket.on('newOrder', (newOrder) => {
+					let htmlNewOrder = "<tr class='row100 body' style='text-align: center'>" +
+																"<td class='cell100 column2'>" + newOrder.idOrder + "</td>" +
+																"<td class='cell100 column3'>" + newOrder.clientName + "</td>" +
+																"<td class='cell100 column4'>" + newOrder.clientEmail + "</td>" +
+																"<td class='cell100 column5'>" + newOrder.clientNumber + "</td>" +
+																"<td class='cell100 column6'>" + newOrder.view + "</td>" +
+																"<td class='cell100 column7'>" + 
+																	"<select style='color: orange' onchange='changeOrderStatus(this, " + newOrder.idOrder + ")'>" +
+																<% statuses.forEach((status) => { %>
+																	<% if (status.idStatus == 1) { %>
+																		"<option selected value='<%= status.idStatus %>'><%= status.nameStatus %></option>" +
+																<%	} else { %>
+																		"<option value='<%= status.idStatus %>' style='color: <%= status.colorStatus %>'><%= status.nameStatus %></option>" +														
+																	<% }}); %>
+															"</select>" +
+															"</td>" +
+														"</tr>";
+					$('#orderTable').prepend(htmlNewOrder);
+				});
 			function ajaxChangeStatus(sel, idOrder) {
 					$.ajax({ 
            				url: '/changeStatus',
@@ -501,7 +522,8 @@
            			    error: function(jqXHR, textStatus, err){
                				alert('text status '+textStatus+', err '+err);
            				}
-        });
+				});
+				
      }
 				function changeOrderStatus(sel, idOrder) {
 					<% statuses.forEach((status) => { %>
