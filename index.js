@@ -2,9 +2,10 @@ const express = require("express");
 const http = require("http");
 const passport = require("passport");
 const session = require("express-session");
-const mailer = require("express-mailer");
-
+const ejs = require("ejs");
 const app = express();
+
+const mailer = require("./email");
 
 const db = require("./db");
 const bodyParser = require("body-parser");
@@ -16,6 +17,7 @@ app.set("view engine", "ejs");
 var server = app.listen(3000);
 var io = require("socket.io").listen(server);
 
+var ipServer = require("ip").address(); // Current server IP address in local network
 var repairers = new Set();
 
 app.get("/", function(req, res) {
@@ -54,7 +56,8 @@ app.post("/createOrder", urlencodedParser, function(req, res) {
             });
             res.sendFile(__dirname + "/public/successSendOrder.html");
           });
-        });
+        }
+      );
     }
   );
 });
@@ -83,7 +86,8 @@ app.get("/orders", function(req, res) {
                 orders: orders,
                 unoccupied: news,
                 statuses: statuses,
-                idRepairer: req.query.idRepairer
+                idRepairer: req.query.idRepairer,
+                ipServer: ipServer
               });
             }
           );
@@ -106,16 +110,86 @@ app.post("/changeStatus", urlencodedParser, function(req, res) {
     change_request,
     [req.body.orderStatus, req.body.idOrder],
     (err, rows) => {
-      if (err) {
-        console.log("Error " + err);
-        throw err;
-      }
       console.log("Status #" + req.body.idOrder + " was successfully changed!");
-      res.json({ answer: "OK" });
+
+      db.query(
+        "SELECT * FROM Orders o INNER JOIN StatusOrder sO ON o.idStatus = sO.idStatus WHERE idOrder = ?",
+        [req.body.idOrder],
+        (err, orders) => {
+          db.query(
+            "SELECT * FROM Repairers WHERE idRepairer = ?",
+            [req.body.idRepairer],
+            (err, reps) => {
+              console.log('Name status: ' + orders[0].nameStatus);
+              ejs.renderFile(
+                __dirname + "/templates/orders/" + orders[0].nameStatus + ".ejs",
+                { order: orders[0], repairer: reps[0], ipServer: ipServer },
+                (err, template) => {
+                  if (err) {
+                    throw err;
+                  }
+                  var mailOptions = {
+                    from: process.env.MAIL_USER,
+                    to: orders[0].email,
+                    subject: "Изменение статуса заказа",
+                    html: template
+                  };
+                  mailer.sendMail(mailOptions, (err, info) => {
+                    if (err) {
+                      throw err;
+                    }
+                    res.json({ answer: "OK" });
+                  });
+                  
+                }
+              );
+            }
+          );
+        }
+      );
     }
   );
 });
 
+app.get("/tt", (req, res) => {
+  var mailOptions = {
+    from: process.env.MAIL_USER,
+    to: "dentalon599@gmail.com",
+    subject: "Sending Email using Node.js",
+    text: "That was easy!",
+    html: "<b>Hello World!</b>"
+  };
+  mailer.sendMail(mailOptions, (err, info) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    console.log("The letter was sent");
+    res.send({ text: "Check your email address :)" });
+  });
+});
+
 app.get(function(req, res) {
   res.sendFile(__dirname + "/public/404.html");
+});
+
+app.get("/mail-test", (req, res) => {
+  ejs.renderFile(
+    __dirname + "/templates/orders/changeOrderStatus.ejs",
+    { idOrder: 12345 },
+    (err, template) => {
+      var mailOptions = {
+        from: process.env.MAIL_USER,
+        to: "dentalon599@gmail.com",
+        subject: "Изменение статуса заказа",
+        html: template
+      };
+      mailer.sendMail(mailOptions, (err, info) => {
+        if (err) {
+          throw err;
+        }
+        res.send("Status: " + info);
+      });
+    }
+  );
 });

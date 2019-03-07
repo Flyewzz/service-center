@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Ваш заказ #<%= order.idOrder %> ожидает оплаты</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <p>Здравствуйте, <%= order.clientName %>! Сообщаем Вам о том, что мастер выполнил заказ.</p>
+    <p>Вы можете связаться с мастером для уточнения любой информации о заказе:</p>
+    <table border="1">
+        <thead>
+            <th>Имя мастера</th>
+            <th>Email</th>
+            <th>Телефон</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td><%= repairer.nameRepairer %></td>
+                <td><%= repairer.emailRepairer %></td>
+                <td><%= repairer.number %></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

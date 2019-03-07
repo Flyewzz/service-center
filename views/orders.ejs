@@ -485,7 +485,7 @@
 			<script src="js/main.js"></script>
 			<script src="socket.io.js"></script>
 			<script>
-				var socket = io.connect('192.168.43.4:3000');
+				var socket = io.connect('<%= ipServer %>:3000');
 				socket.on('newOrder', (newOrder) => {
 					let htmlNewOrder = "<tr class='row100 body' style='text-align: center'>" +
 																"<td class='cell100 column2'>" + newOrder.idOrder + "</td>" +
@@ -505,6 +505,7 @@
 															"</td>" +
 														"</tr>";
 					$('#orderTable').prepend(htmlNewOrder);
+					alert('New order!');
 				});
 			function ajaxChangeStatus(sel, idOrder) {
 					$.ajax({ 
@@ -513,7 +514,7 @@
            				cache: false, 
            				data: { 
 							    idOrder: idOrder,
-								orderStatus: sel.options[sel.selectedIndex].value, 
+								orderStatus: sel.options[sel.selectedIndex].value,
 								idRepairer: <%= idRepairer %>,
 						}, 
            				success: function(data){
