@@ -485,7 +485,7 @@
 			<script src="js/main.js"></script>
 			<script src="socket.io.js"></script>
 			<script>
-				var socket = io.connect('<%= ipServer %>:3000');
+				var socket = io.connect('<%= ipServer %>:8080');
 				socket.on('newOrder', (newOrder) => {
 					let htmlNewOrder = "<tr class='row100 body' style='text-align: center'>" +
 																"<td class='cell100 column2'>" + newOrder.idOrder + "</td>" +

@@ -17,9 +17,10 @@ app.set("view engine", "ejs");
 var server = app.listen(3000);
 var io = require("socket.io").listen(server);
 
-var ipServer = require("ip").address(); // Current server IP address in local network
+// var ipServer = require("ip").address(); // Current server IP address in local network
 var repairers = new Set();
 
+console.log("Current IP: " + ipServer);
 app.get("/", function(req, res) {
   db.query("SELECT * FROM deviceviews", (err, rows) => {
     res.render("index", { views: rows });
@@ -64,7 +65,8 @@ app.post("/createOrder", urlencodedParser, function(req, res) {
 
 app.get("/orders", function(req, res) {
   db.query(
-    "SELECT * FROM service.Orders o INNER JOIN Repairers R on o.idRepairer = R.idRepairer " +
+    "SELECT * FROM service.Orders o " +
+      "INNER JOIN Repairers R on o.idRepairer = R.idRepairer " +
       "AND R.idRepairer = ? INNER JOIN StatusOrder sO ON o.idStatus = sO.idStatus " +
       "INNER JOIN deviceviews dv ON o.idView = dv.idView ORDER BY o.idStatus, o.clientName",
     [req.query.idRepairer],
@@ -87,7 +89,7 @@ app.get("/orders", function(req, res) {
                 unoccupied: news,
                 statuses: statuses,
                 idRepairer: req.query.idRepairer,
-                ipServer: ipServer
+                ipServer: process.env.IP_SERVER
               });
             }
           );
@@ -120,9 +122,12 @@ app.post("/changeStatus", urlencodedParser, function(req, res) {
             "SELECT * FROM Repairers WHERE idRepairer = ?",
             [req.body.idRepairer],
             (err, reps) => {
-              console.log('Name status: ' + orders[0].nameStatus);
+              console.log("Name status: " + orders[0].nameStatus);
               ejs.renderFile(
-                __dirname + "/templates/orders/" + orders[0].nameStatus + ".ejs",
+                __dirname +
+                  "/templates/orders/" +
+                  orders[0].nameStatus +
+                  ".ejs",
                 { order: orders[0], repairer: reps[0], ipServer: ipServer },
                 (err, template) => {
                   if (err) {
@@ -140,56 +145,12 @@ app.post("/changeStatus", urlencodedParser, function(req, res) {
                     }
                     res.json({ answer: "OK" });
                   });
-                  
                 }
               );
             }
           );
         }
       );
-    }
-  );
-});
-
-app.get("/tt", (req, res) => {
-  var mailOptions = {
-    from: process.env.MAIL_USER,
-    to: "dentalon599@gmail.com",
-    subject: "Sending Email using Node.js",
-    text: "That was easy!",
-    html: "<b>Hello World!</b>"
-  };
-  mailer.sendMail(mailOptions, (err, info) => {
-    if (err) {
-      console.log(err);
-      return;
-    }
-    console.log("The letter was sent");
-    res.send({ text: "Check your email address :)" });
-  });
-});
-
-app.get(function(req, res) {
-  res.sendFile(__dirname + "/public/404.html");
-});
-
-app.get("/mail-test", (req, res) => {
-  ejs.renderFile(
-    __dirname + "/templates/orders/changeOrderStatus.ejs",
-    { idOrder: 12345 },
-    (err, template) => {
-      var mailOptions = {
-        from: process.env.MAIL_USER,
-        to: "dentalon599@gmail.com",
-        subject: "Изменение статуса заказа",
-        html: template
-      };
-      mailer.sendMail(mailOptions, (err, info) => {
-        if (err) {
-          throw err;
-        }
-        res.send("Status: " + info);
-      });
     }
   );
 });
