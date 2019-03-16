@@ -14,11 +14,10 @@ const urlencodedParser = bodyParser.urlencoded({ extended: false });
 app.use(express.static(__dirname + "/public"));
 app.set("view engine", "ejs");
 
-var server = app.listen(3000);
+var server = app.listen(8080);
 var io = require("socket.io").listen(server);
 
-// var ipServer = require("ip").address(); // Current server IP address in local network
-var repairers = new Set();
+var ipServer = require("ip").address(); // Current server IP address in local network
 
 console.log("Current IP: " + ipServer);
 app.get("/", function(req, res) {
@@ -26,7 +25,7 @@ app.get("/", function(req, res) {
     res.render("index", { views: rows });
   });
 });
-app.post("/createOrder", urlencodedParser, function(req, res) {
+app.post("/orders", urlencodedParser, function(req, res) {
   db.query(
     "INSERT INTO Orders (clientName, email, idView, idRepairer, idStatus, clientNumber, orderStartDate, clientMessage) " +
       "VALUES (?, ?, ?, NULL, 1, ?, CURDATE(), ?) ",
@@ -45,18 +44,16 @@ app.post("/createOrder", urlencodedParser, function(req, res) {
         (err, views) => {
           var idOrder = 0;
           db.query("SELECT MAX(idOrder) as lid FROM Orders", (err, data) => {
-            repairers.forEach(repairer => {
-              repairer.emit("newOrder", {
-                idOrder: data[0].lid,
-                clientName: req.body.clientName,
-                clientEmail: req.body.clientEmail,
-                view: views[0].nameView,
-                clientNumber: req.body.clientNumber,
-                clientMessage: req.body.clientMessage
-              });
+            io.sockets.in("repairers").emit("newOrder", {
+              idOrder: data[0].lid,
+              clientName: req.body.clientName,
+              clientEmail: req.body.clientEmail,
+              view: views[0].nameView,
+              clientNumber: req.body.clientNumber,
+              clientMessage: req.body.clientMessage
             });
-            res.sendFile(__dirname + "/public/successSendOrder.html");
           });
+          res.sendFile(__dirname + "/public/successSendOrder.html");
         }
       );
     }
@@ -79,9 +76,9 @@ app.get("/orders", function(req, res) {
             "SELECT * FROM statusOrder ORDER BY idStatus",
             (err, statuses) => {
               io.sockets.on("connection", socket => {
-                repairers.add(socket);
-                io.sockets.on("disconnect", () => {
-                  repairers.delete(socket);
+                socket.join("repairers");
+                socket.on("disconnect", () => {
+                  console.log(socket.id + " disconnected");
                 });
               });
               res.render("orders", {
@@ -99,7 +96,7 @@ app.get("/orders", function(req, res) {
   );
 });
 
-app.post("/changeStatus", urlencodedParser, function(req, res) {
+app.put("/status", urlencodedParser, function(req, res) {
   var change_request =
     "UPDATE Orders SET idStatus = ?, idRepairer = " +
     req.body.idRepairer +

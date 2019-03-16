@@ -43,6 +43,7 @@
 				return false;
 			}
 		</script>
+
 		
 		<link type="text/css" rel="stylesheet" href=".s/src/social.css" />
 		
@@ -482,8 +483,8 @@
 				
 			</script>
 		<!--===============================================================================================-->
-			<script src="js/main.js"></script>
-			<script src="socket.io.js"></script>
+			<!-- <script src="js/main.js"></script> -->
+			<script src="/socket.io/socket.io.js"></script>
 			<script>
 				var socket = io.connect('<%= ipServer %>:8080');
 				socket.on('newOrder', (newOrder) => {
@@ -509,8 +510,8 @@
 				});
 			function ajaxChangeStatus(sel, idOrder) {
 					$.ajax({ 
-           				url: '/changeStatus',
-           				type: 'POST',
+           				url: '/status',
+           				type: 'PUT',
            				cache: false, 
            				data: { 
 							    idOrder: idOrder,
