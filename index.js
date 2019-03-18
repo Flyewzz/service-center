@@ -139,15 +139,15 @@ app.put("/status", urlencodedParser, function(req, res) {
             [req.body.idRepairer],
             (err, reps) => {
               console.log("Name status: " + orders[0].nameStatus);
-              ejs.renderFile(
-                __dirname +
-                  "/templates/orders/" +
+              nunjucks.render(
+                  "templates/orders/" +
                   orders[0].nameStatus +
                   ".html",
                 { order: orders[0], repairer: reps[0], ipServer: ipServer },
                 (err, template) => {
                   if (err) {
-                    throw err;
+                    console.log(err);
+                    return;
                   }
                   var mailOptions = {
                     from: process.env.MAIL_USER,
@@ -157,7 +157,8 @@ app.put("/status", urlencodedParser, function(req, res) {
                   };
                   mailer.sendMail(mailOptions, (err, info) => {
                     if (err) {
-                      throw err;
+                      console.log(err);
+                      return;
                     }
                     res.json({ answer: "OK" });
                   });
