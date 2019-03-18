@@ -115,18 +115,16 @@ app.get("/orders", function(req, res) {
 });
 
 app.put("/status", urlencodedParser, function(req, res) {
-  // Уязвимость (!!!)
-  var change_request =
-    "UPDATE Orders SET idStatus = ?, idRepairer = " +
-    req.body.idRepairer +
-    " WHERE idOrder = ?";
+  var idRepairer;
   if (req.body.orderStatus == 1) {
-    change_request =
-      "UPDATE Orders SET idStatus = ?, idRepairer = NULL WHERE idOrder = ?";
+    idRepairer = null;
+  }
+  else {
+    idRepairer = req.body.idRepairer;
   }
   db.query(
-    change_request,
-    [req.body.orderStatus, req.body.idOrder],
+    "UPDATE Orders SET idStatus = ?, idRepairer = ? WHERE idOrder = ?",
+    [req.body.orderStatus, idRepairer, req.body.idOrder],
     (err, rows) => {
       console.log("Status #" + req.body.idOrder + " was successfully changed!");
 
