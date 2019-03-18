@@ -195,6 +195,6 @@ app.get('/login_test', (req, res) => {
     if (!user) {
       return res.redirect('/login');
     }
-    res.send(`Hello, ${user[0].nameRepairer}!`);
+    res.send(`Hello, ${user.nameRepairer}!`);
   });
 });

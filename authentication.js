@@ -14,7 +14,8 @@ module.exports = {
         const token = req.cookies['access_token'];
         try {
             const data = jwt.decode(token, process.env.SECRET_KEY);
-            db.query("SELECT idRepairer FROM Repairers WHERE emailRepairer = ? and nameRepairer = ?", 
+            console.log('data', data.nameRepairer, data.emailRepairer);
+            db.query("SELECT idRepairer, nameRepairer, emailRepairer FROM Repairers WHERE emailRepairer = ? and nameRepairer = ?", 
             [data.emailRepairer, data.nameRepairer], (err, repairers) => {
                 if (repairers[0]) {
                     callback(repairers[0]);
