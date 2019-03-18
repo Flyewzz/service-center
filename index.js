@@ -1,18 +1,27 @@
 const express = require("express");
 const http = require("http");
-const passport = require("passport");
-const session = require("express-session");
 const ejs = require("ejs");
 const app = express();
 
+const nunjucks = require('nunjucks');
 const mailer = require("./email");
 
 const db = require("./db");
 const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser');
 // Creating the parser for data application/x-www-form-urlencoded
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
 app.use(express.static(__dirname + "/public"));
-app.set("view engine", "ejs");
+app.use(cookieParser());
+
+const auth = require('./authentication');
+
+nunjucks.configure('./views', {
+  autoescape: true,
+  express: app
+});
+
+// app.set("view engine", "ejs");
 
 var server = app.listen(8080);
 var io = require("socket.io").listen(server);
@@ -22,7 +31,7 @@ var ipServer = require("ip").address(); // Current server IP address in local ne
 console.log("Current IP: " + ipServer);
 app.get("/", function(req, res) {
   db.query("SELECT * FROM deviceviews", (err, rows) => {
-    res.render("index", { views: rows });
+    res.render("index.html", { views: rows });
   });
 });
 app.post("/orders", urlencodedParser, function(req, res) {
@@ -81,7 +90,7 @@ app.get("/orders", function(req, res) {
                   console.log(socket.id + " disconnected");
                 });
               });
-              res.render("orders", {
+              res.render("orders.html", {
                 orders: orders,
                 unoccupied: news,
                 statuses: statuses,
@@ -97,6 +106,7 @@ app.get("/orders", function(req, res) {
 });
 
 app.put("/status", urlencodedParser, function(req, res) {
+  // Уязвимость (!!!)
   var change_request =
     "UPDATE Orders SET idStatus = ?, idRepairer = " +
     req.body.idRepairer +
@@ -124,7 +134,7 @@ app.put("/status", urlencodedParser, function(req, res) {
                 __dirname +
                   "/templates/orders/" +
                   orders[0].nameStatus +
-                  ".ejs",
+                  ".html",
                 { order: orders[0], repairer: reps[0], ipServer: ipServer },
                 (err, template) => {
                   if (err) {
@@ -150,4 +160,41 @@ app.put("/status", urlencodedParser, function(req, res) {
       );
     }
   );
+});
+
+app.get('/login', (req, res) => {
+  res.render('login.html');
+});
+
+app.post('/login', urlencodedParser, (req, res) => {
+  const email = req.body.clientEmail;
+  const password = req.body.clientPassword;
+  auth.authenticate(email, password, (ok) => {
+    console.log(ok);
+    if (!ok) {
+      res.redirect('/login');
+      return;
+    }
+    auth.login(email, res, (user) => {
+      console.log('user', user);
+      if (!user) {
+        console.log('500 error');
+        res.redirect('/login');
+        return;
+      }
+      res.render("successLogin.html", {repairer: user});
+    });
+  });
+});
+
+
+// Заглушка
+
+app.get('/login_test', (req, res) => {
+  auth.isAuthenticated(req, (user) => {
+    if (!user) {
+      return res.redirect('/login');
+    }
+    res.send(`Hello, ${user[0].nameRepairer}!`);
+  });
 });

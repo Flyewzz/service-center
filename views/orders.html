@@ -1,0 +1,161 @@
+{% extends 'base.html' %} 
+{% block menu %}
+{% endblock %} 
+{% block tables %}
+<div class="limiter">
+  <div class="container-table100">
+    <div class="wrap-table100">
+      <div style="margin-bottom: 50%" class="table100 ver4 m-b-110">
+        <div class="table100-head">
+          <table>
+            <thead>
+              <tr class="row100 head">
+                <th class="cell100 column2" style="text-align: center">ID</th>
+                <th class="cell100 column3" style="text-align: center">
+                  Client
+                </th>
+                <th class="cell100 column4" style="text-align: center">
+                  Email
+                </th>
+                <th class="cell100 column5" style="text-align: right">
+                  Phone number
+                </th>
+                <th class="cell100 column6" style="text-align: center">
+                  Device view
+                </th>
+                <th class="cell100 column7" style="text-align: center">
+                  Status
+                </th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+        <div class="table100-body js-pscroll">
+          <table>
+            <tbody id="orderTable">
+              {% for unoccupiedOrder in unoccupied %}
+              <tr class="row100 body" style="text-align: center">
+                <td class="cell100 column2">{{ unoccupiedOrder.idOrder }}</td>
+                <td class="cell100 column3">
+                  {{ unoccupiedOrder.clientName }}
+                </td>
+                <td class="cell100 column4">{{ unoccupiedOrder.email }}</td>
+                <td class="cell100 column5">
+                  {{ unoccupiedOrder.clientNumber }}
+                </td>
+                <td class="cell100 column6">{{ unoccupiedOrder.nameView }}</td>
+                <td class="cell100 column7">
+                  <select
+                    style="color: {{ unoccupiedOrder.colorStatus }}"
+                    onchange="changeOrderStatus(this, {{ unoccupiedOrder.idOrder }})"
+                  >
+                    {% for status in statuses %} {% if (unoccupiedOrder.idStatus
+                    == status.idStatus) %}
+                    <option selected value="{{ status.idStatus }}">{{
+                      status.nameStatus
+                    }}</option>
+                    {% else %}
+                    <option
+                      value="{{ status.idStatus }}"
+                      style="color: {{ status.colorStatus }}"
+                      >{{ status.nameStatus }}</option
+                    >
+                    {% endif %} {% endfor %}
+                  </select>
+                </td>
+              </tr>
+              {% endfor %} {% for order in orders %}
+              <tr class="row100 body" style="text-align: center">
+                <td class="cell100 column2">{{ order.idOrder }}</td>
+                <td class="cell100 column3">{{ order.clientName }}</td>
+                <td class="cell100 column4">{{ order.email }}</td>
+                <td class="cell100 column5">{{ order.clientNumber }}</td>
+                <td class="cell100 column6">{{ order.nameView }}</td>
+                <td class="cell100 column7">
+                  <select
+                    style="color: {{ order.colorStatus }}"
+                    onchange="changeOrderStatus(this, {{ order.idOrder }})"
+                  >
+                    {% for status in statuses %} {% if (order.idStatus ==
+                    status.idStatus) %}
+                    <option selected value="{{ status.idStatus }}">{{ status.nameStatus }}</option>
+                    {% else %}
+                    <option
+                      value="{{ status.idStatus }}"
+                      style="color: {{ status.colorStatus }}"
+                      >{{ status.nameStatus }}</option
+                    >
+                    {% endif %} {% endfor %}
+                  </select>
+                </td>
+                <!-- <td class="cell100 column7" style="color: {{ order.colorStatus }}">
+														  {{ order.nameStatus }}
+														</td> -->
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-bottom: 40%" id="server-message"></div>
+</div>
+{% endblock %} {% block bscripts %}
+<!--===============================================================================================-->
+<!-- <script src="js/main.js"></script> -->
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  	var socket = io.connect('{{ ipServer }}:8080');
+  	socket.on('newOrder', (newOrder) => {
+  		let htmlNewOrder = "<tr class='row100 body' style='text-align: center'>" +
+  													"<td class='cell100 column2'>" + newOrder.idOrder + "</td>" +
+  													"<td class='cell100 column3'>" + newOrder.clientName + "</td>" +
+  													"<td class='cell100 column4'>" + newOrder.clientEmail + "</td>" +
+  													"<td class='cell100 column5'>" + newOrder.clientNumber + "</td>" +
+  													"<td class='cell100 column6'>" + newOrder.view + "</td>" +
+  													"<td class='cell100 column7'>" +
+  														"<select style='color: orange' onchange='changeOrderStatus(this, " + newOrder.idOrder + ")'>" +
+  													{% for status in statuses %}
+  														{% if (status.idStatus == 1) %}
+  															"<option selected value='{{ status.idStatus }}'>{{ status.nameStatus }}</option>" +
+  													{% else %}
+  															"<option value='{{ status.idStatus }}' style='color: {{ status.colorStatus }}'>{{ status.nameStatus }}</option>" +
+  													{% endif %}
+  													{% endfor %}
+  												"</select>" +
+  												"</td>" +
+  											"</tr>";
+  		$('#orderTable').prepend(htmlNewOrder);
+  		alert('New order!');
+  	});
+  function ajaxChangeStatus(sel, idOrder) {
+  		$.ajax({
+          				url: '/status',
+          				type: 'PUT',
+          				cache: false,
+          				data: {
+  				    idOrder: idOrder,
+  					orderStatus: sel.options[sel.selectedIndex].value,
+  					idRepairer: {{ idRepairer }},
+  			},
+          				success: function(data){
+             				$('#server-message').html("<h3 style='color: green;'>Статус заказа #" + idOrder + " успешно изменен!</h3>");
+          				},
+          			    error: function(jqXHR, textStatus, err){
+              				alert('text status '+textStatus+', err '+err);
+          				}
+  	});
+
+    }
+  	function changeOrderStatus(sel, idOrder) {
+  		{% for status in statuses %}
+  			if (sel.options[sel.selectedIndex].value == '{{ status.idStatus }}') {
+  				sel.style.color = '{{ status.colorStatus }}';
+  				ajaxChangeStatus(sel, idOrder);
+  				return;
+  			}
+  		{% endfor %}
+  	}
+</script>
+{% endblock %}

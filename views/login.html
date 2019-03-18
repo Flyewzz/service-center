@@ -1,4 +1,3 @@
-
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -118,58 +117,87 @@ td, body {font-family:arial; font-size:13px;color:#5d5d5d;}
 </div>
 
 <div class="clt">
-<li><a href="index.html#">Ремонт<br/>холодильников</a></li>
-<li><a href="index.html#">Ремонт<br/>стиральных машин</a></li>
-<li><a href="index.html#">Ремонт<br/>посудомоечных</a></li>
-<li><a href="index.html#">Ремонт<br/>плит</a></li>
-<li><a href="index.html#">Ремонт<br/>микроволновок</a></li>
-<li><a href="index.html#">Ремонт<br/>плазменных ТВ</a></li>
-<li><a href="index.html#">Ремонт<br/>компьютеров</a></li>
-<li><a href="index.html#">Ремонт<br/>ноутбуков</a></li>
+<li><a href="/">Ремонт<br/>холодильников</a></li>
+<li><a href="/">Ремонт<br/>стиральных машин</a></li>
+<li><a href="/">Ремонт<br/>посудомоечных</a></li>
+<li><a href="/">Ремонт<br/>плит</a></li>
+<li><a href="/">Ремонт<br/>микроволновок</a></li>
+<li><a href="/">Ремонт<br/>плазменных ТВ</a></li>
+<li><a href="/">Ремонт<br/>компьютеров</a></li>
+<li><a href="/">Ремонт<br/>ноутбуков</a></li>
 </div>
 
 <!-- <div id="banners">
-<a href="index.html#" class="banner1"></a>
-<a href="index.html#" class="banner2"></a>
-<a href="index.html#" class="banner3"></a>
+<a href="/" class="banner1"></a>
+<a href="/" class="banner2"></a>
+<a href="/" class="banner3"></a>
 </div> -->
+
 
 <div id="indexinf">
 
 <div class="indexform">
 <div class="pad">
-<x>ОНЛАЙН ЗАКАЗ</x><br/>
-<form method="post" action="/orders" name="mform" id="mffmbaLD" style="margin:0" >
-					<table border="0" style="margin-top:20px;" id="table1" cellspacing="0" cellpadding="0">
-<tr><td><input type="text" name="clientName" size="30" style="height:30px;width:100%;font-size:12px;color:#5a5a5a;background:#fff; line-height:30px;padding-left:10px;" value="Ваше имя" onfocus="if(this.value == 'Ваше имя'){this.value = ''}" onblur="if(this.value == ''){this.value = 'Ваше имя'}" maxlength="70"> </td></tr>
-<tr><td><input type="email" name="clientEmail" size="30" style="height:30px;width:100%;margin-top:8px;font-size:12px;color:#5a5a5a; line-height:30px;padding-left:10px;" value="Ваш Email" onfocus="if(this.value == 'Ваш Email'){this.value = ''}" onblur="if(this.value == ''){this.value = 'Ваш Email'}" maxlength="70"> </td></tr>
-<tr><td><input type="tel" name="clientNumber" size="30" style="height:30px;width:100%;margin-top:8px;font-size:12px;color:#5a5a5a; line-height:30px;padding-left:10px;" value="Телефон" onfocus="if(this.value == 'Телефон'){this.value = ''}" onblur="if(this.value == ''){this.value = 'Телефон'}" maxlength="70"> </td></tr>
-<tr><td><select name='device_view' style="height:30px;width:100%;margin-top:8px;font-size:12px;color:#5a5a5a; line-height:30px;padding-left:10px;" maxlength="100">
-		<% views.forEach((view) => { %>
-	<option value='<%= view.idView %>'><%= view.nameView %></option>
-		<% }); %>
-	</select></td></tr>
-<tr><td><textarea rows="7" name="clientMessage" cols="30" style="height:160px;overflow:hidden;width:100%;margin-top:8px; font-size:12px; color:#5a5a5a; line-height:20px;padding-left:10px;" value="Текст сообщения" onfocus="if(this.value == 'Краткое описание неисправности (не обязательно)'){this.value = ''}" onblur="if(this.value == ''){this.value = 'Краткое описание неисправности (не обязательно)'}"></textarea> </td></tr>
-<tr><td><br /><input type="submit" style="width:100%;height:35px;margin-top:6px;" value="Отправить заявку"></td></tr>
-</table>
-				</form>
-			
 </div>
 </div>
 
 <div class="indexcentertext">
-<div class="pad">
-<x>КРАТКО О КОМПАНИИ</x><br/>
-<p>Сервис служба предоставляет услуги по ремонту бытовой техники и электроники в Киеве и пригороде с вызовом мастера на дом. Наша ремонтная мастерская производит качественный сервис крупной бытовой техники всех марок и моделей, как импортного, так и отечественного производства, независимо от сложности поломки.</p>
-<p>Многолетний опыт обслуживания бытовой техники, позволяет лучшим мастерам нашего сервиса точно определить характер неисправности вашей техники и успешно устранить технические неполадки прямо на дому в максимально короткие сроки в удобное для вас время.</p>
-<p>Исключительно качественное и недорогое обслуживание в сочетании с знаниями и доброжелательностью нашего персонала, делает нас лучшим выбором в ремонте домашней техники. Сервисный центр проводит полный спектр бытового ремонта. Быстро, качественно и недорого. Отправляйте заявку прямо сейчас!</p>
-<!-- <a href="successSendOrder.html">Copy</a> -->
+<div style="text-align: center; align-items: center; justify-content: center;" class="pad">
+<x style="font-size: 18;" id='successLogin'>Вход в бэкофис заказов</x><br/>
+<form
+        method="post"
+        action="/login"
+        name="mform"
+        id="mffmbaLD"
+        style="margin:0; align-self: center;"
+      >
+        <table
+          border="0"
+          style="margin-top:20px;"
+          id="table1"
+          cellspacing="0"
+          cellpadding="0"
+        >
+          <tr>
+            <td>
+              <input
+                type="email"
+                name="clientEmail"
+                size="30"
+                style="height:30px;width:100%;margin-top:8px;font-size:12px;color:#5a5a5a; line-height:30px;padding-left:10px;"
+                placeholder="Ваш Email"
+                maxlength="70"
+              />
+            </td>
+          </tr>
+          <tr>
+                <td>
+                  <input
+                    type="password"
+                    name="clientPassword"
+                    size="30"
+                    style="height:30px;width:100%;margin-top:8px;font-size:12px;color:#5a5a5a; line-height:30px;padding-left:10px;"
+                    placeholder="Ваш пароль"
+                    maxlength="70"
+                  />
+                </td>
+              </tr>
+          <tr>
+            <td>
+              <br /><input
+                type="submit"
+                style="width:100%;height:35px;margin-top:6px;"
+                value="Отправить заявку"
+              />
+            </td>
+          </tr>
+        </table>
+      </form>
 </div>
 </div>
 
 <div class="indexnewstext">
 <div class="pad">
-<x>НОВОСТИ</x><br/>
 <div class="indexinfnews"> <div class="ils1">07.04.2013</div> <div class="ils2"><a href="http://appliancerepair.ucoz.com/news/estestvennyj_obekt_prava_predposylki_i_razvitie/2013-04-07-22">Естественный объект ...</a></div> <div style="font-size:12px;">Квантовое состояние создает фронт, tertium nоn datur. По своим философ...</div> </div><div class="indexinfnews"> <div class="ils1">07.04.2013</div> <div class="ils2"><a href="http://appliancerepair.ucoz.com/news/kompleksnyj_reklamnyj_brif_glazami_sovremennikov/2013-04-07-21">Комплексный рекламны...</a></div> <div style="font-size:12px;">Поэтому вещество косвенно определяет предмет деятельности, что часто с...</div> </div>
 </div>
 </div>
@@ -186,7 +214,7 @@ td, body {font-family:arial; font-size:13px;color:#5d5d5d;}
 
 <div class="btitle"><div class="bpad"><!-- <bt> --><!--<s5184>-->Меню сайта<!--</s>--><!-- </bt> --></div></div>
 <div id="uMenuDiv1" class="uMenuV" style="position:relative;"><ul class="uMenuRoot">
-<li><div class="umn-tl"><div class="umn-tr"><div class="umn-tc"></div></div></div><div class="umn-ml"><div class="umn-mr"><div class="umn-mc"><div class="uMenuItem"><a href="index.html"><span>Главная страница</span></a></div></div></div></div><div class="umn-bl"><div class="umn-br"><div class="umn-bc"><div class="umn-footer"></div></div></div></div></li>
+<li><div class="umn-tl"><div class="umn-tr"><div class="umn-tc"></div></div></div><div class="umn-ml"><div class="umn-mr"><div class="umn-mc"><div class="uMenuItem"><a href="/"><span>Главная страница</span></a></div></div></div></div><div class="umn-bl"><div class="umn-br"><div class="umn-bc"><div class="umn-footer"></div></div></div></div></li>
 <li><div class="umn-tl"><div class="umn-tr"><div class="umn-tc"></div></div></div><div class="umn-ml"><div class="umn-mr"><div class="umn-mc"><div class="uMenuItem"><a href="http://appliancerepair.ucoz.com/index/0-2"><span>Информация о сайте</span></a></div></div></div></div><div class="umn-bl"><div class="umn-br"><div class="umn-bc"><div class="umn-footer"></div></div></div></div></li>
 <li><div class="umn-tl"><div class="umn-tr"><div class="umn-tc"></div></div></div><div class="umn-ml"><div class="umn-mr"><div class="umn-mc"><div class="uMenuItem"><a href="http://appliancerepair.ucoz.com/gb"><span>Гостевая книга</span></a></div></div></div></div><div class="umn-bl"><div class="umn-br"><div class="umn-bc"><div class="umn-footer"></div></div></div></div></li>
 <li><div class="umn-tl"><div class="umn-tr"><div class="umn-tc"></div></div></div><div class="umn-ml"><div class="umn-mr"><div class="umn-mc"><div class="uMenuItem"><a href="http://appliancerepair.ucoz.com/index/0-3"><span>Обратная связь</span></a></div></div></div></div><div class="umn-bl"><div class="umn-br"><div class="umn-bc"><div class="umn-footer"></div></div></div></div></li>
@@ -386,19 +414,19 @@ function ustarrating(id, mark) {
 <div class="x2">Категории сайта</div>
 <p style="display:table;">
 <div style="float:left;">
-<li><a href="index.html#">Главная</a></li>
-<li><a href="index.html#">О компании</a></li>
-<li><a href="index.html#">Услуги и цены</a></li>
+<li><a href="/">Главная</a></li>
+<li><a href="/">О компании</a></li>
+<li><a href="/">Услуги и цены</a></li>
 </div>
 <div style="float:left;margin-left:70px;">
-<li><a href="index.html#">Отзывы</a></li>
-<li><a href="index.html#">Вопрос-ответ</a></li>
-<li><a href="index.html#">Акции</a></li>
+<li><a href="/">Отзывы</a></li>
+<li><a href="/">Вопрос-ответ</a></li>
+<li><a href="/">Акции</a></li>
 </div>
 <div style="float:left;margin-left:70px;">
-<li><a href="index.html#">Правила использования</a></li>
-<li><a href="index.html#">Обратная связь</a></li>
-<li><a href="index.html#">Гарантии</a></li>
+<li><a href="/">Правила использования</a></li>
+<li><a href="/">Обратная связь</a></li>
+<li><a href="/">Гарантии</a></li>
 </div>
 </p>
 </div>
@@ -417,9 +445,13 @@ function ustarrating(id, mark) {
 	sTChyXK.insertAdjacentHTML('beforeEnd', '<a rel="nofollow" href="http://appliancerepair.ucoz.com/panel/?a=ustat&amp;u=appliancerepair&amp;d=d&amp;il=ru" target="_blank" title="uCoz Counter">\
 	<img alt="" src="http://appliancerepair.ucoz.com/stat/'&#32;+&#32;Date.now()&#32;+&#32;'?01'&#32;+&#32;escape(document.referrer)&#32;+&#32;'" height="31" width="88" /></a>');
 </script> -->
+<script>
+location.hash = 'successLogin';
+</script>
 	</div>
 </div>
 </div><!--/U1BFOOTER1Z--> 
+
 </body>
 </html><div id="utbr8214" rel="s57"></div>
 <!-- 0.04151 (s57) -->
