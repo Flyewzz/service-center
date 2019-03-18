@@ -82,6 +82,15 @@ td, body {font-family:arial; font-size:13px;color:#5d5d5d;}
 <div id="logo"><a href="/" class="logo"></a></div>
 <div id="days"><div class="days">Пн-Пт с 9:00 до 19:00</div></div>
 <div id="phone"><div class="phone"><span>Контактный телефон:</span><br /><font style="font-size:25px;">+3 (8093) <font color="#198ad7">999-66-99</font></font></div></div>
+{% if user %}
+<div>
+<div>{{ user.nameRepairer }}</div>
+<div><a href="/orders">Список заказов</a></div>
+<div id='logout'><a href="/logout">Выйти</a></div>
+</div>
+{% else %}
+<div id='login'><a href="/login">Войти</a></div>
+{% endif %}
 </div>
 <div id="headmenu" class="headmenu">
 <li><a href="/">Главная</a></li>

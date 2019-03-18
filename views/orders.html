@@ -101,7 +101,8 @@
   </div>
   <div style="margin-bottom: 40%" id="server-message"></div>
 </div>
-{% endblock %} {% block bscripts %}
+{% endblock %} 
+{% block bscripts %}
 <!--===============================================================================================-->
 <!-- <script src="js/main.js"></script> -->
 <script src="/socket.io/socket.io.js"></script>
@@ -137,7 +138,7 @@
           				data: {
   				    idOrder: idOrder,
   					orderStatus: sel.options[sel.selectedIndex].value,
-  					idRepairer: {{ idRepairer }},
+  					idRepairer: {{ user.idRepairer }},
   			},
           				success: function(data){
              				$('#server-message').html("<h3 style='color: green;'>Статус заказа #" + idOrder + " успешно изменен!</h3>");

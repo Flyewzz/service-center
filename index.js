@@ -3,20 +3,20 @@ const http = require("http");
 const ejs = require("ejs");
 const app = express();
 
-const nunjucks = require('nunjucks');
+const nunjucks = require("nunjucks");
 const mailer = require("./email");
 
 const db = require("./db");
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser');
+const cookieParser = require("cookie-parser");
 // Creating the parser for data application/x-www-form-urlencoded
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
 app.use(express.static(__dirname + "/public"));
 app.use(cookieParser());
 
-const auth = require('./authentication');
+const auth = require("./authentication");
 
-nunjucks.configure('./views', {
+nunjucks.configure("./views", {
   autoescape: true,
   express: app
 });
@@ -31,7 +31,9 @@ var ipServer = require("ip").address(); // Current server IP address in local ne
 console.log("Current IP: " + ipServer);
 app.get("/", function(req, res) {
   db.query("SELECT * FROM deviceviews", (err, rows) => {
-    res.render("index.html", { views: rows });
+    auth.isAuthenticated(req, user => {
+      res.render("index.html", { views: rows, user: user });
+    });
   });
 });
 app.post("/orders", urlencodedParser, function(req, res) {
@@ -70,39 +72,46 @@ app.post("/orders", urlencodedParser, function(req, res) {
 });
 
 app.get("/orders", function(req, res) {
-  db.query(
-    "SELECT * FROM service.Orders o " +
-      "INNER JOIN Repairers R on o.idRepairer = R.idRepairer " +
-      "AND R.idRepairer = ? INNER JOIN StatusOrder sO ON o.idStatus = sO.idStatus " +
-      "INNER JOIN deviceviews dv ON o.idView = dv.idView ORDER BY o.idStatus, o.clientName",
-    [req.query.idRepairer],
-    (err, orders) => {
-      db.query(
-        "SELECT * FROM service.Orders o INNER JOIN statusOrder sO ON o.idStatus = sO.idStatus " +
-          "INNER JOIN deviceviews dv ON o.idView = dv.idView WHERE o.idRepairer IS NULL ORDER BY o.orderStartDate DESC",
-        (err, news) => {
-          db.query(
-            "SELECT * FROM statusOrder ORDER BY idStatus",
-            (err, statuses) => {
-              io.sockets.on("connection", socket => {
-                socket.join("repairers");
-                socket.on("disconnect", () => {
-                  console.log(socket.id + " disconnected");
-                });
-              });
-              res.render("orders.html", {
-                orders: orders,
-                unoccupied: news,
-                statuses: statuses,
-                idRepairer: req.query.idRepairer,
-                ipServer: process.env.IP_SERVER
-              });
-            }
-          );
-        }
-      );
+  auth.isAuthenticated(req, repairer => {
+    if (!repairer) {
+      res.cookie("last_page", req.url);
+      return res.redirect("/login");
     }
-  );
+    db.query(
+      "SELECT * FROM service.Orders o " +
+        "INNER JOIN Repairers R on o.idRepairer = R.idRepairer " +
+        "AND R.idRepairer = ? INNER JOIN StatusOrder sO ON o.idStatus = sO.idStatus " +
+        "INNER JOIN deviceviews dv ON o.idView = dv.idView ORDER BY o.idStatus, o.clientName",
+      [repairer.idRepairer],
+      (err, orders) => {
+        db.query(
+          "SELECT * FROM service.Orders o INNER JOIN statusOrder sO ON o.idStatus = sO.idStatus " +
+            "INNER JOIN deviceviews dv ON o.idView = dv.idView WHERE o.idRepairer IS NULL ORDER BY o.orderStartDate DESC",
+          (err, news) => {
+            db.query(
+              "SELECT * FROM statusOrder ORDER BY idStatus",
+              (err, statuses) => {
+                io.sockets.on("connection", socket => {
+                  socket.join("repairers");
+                  socket.on("disconnect", () => {
+                    console.log(socket.id + " disconnected");
+                  });
+                });
+                res.render("orders.html", {
+                  orders: orders,
+                  unoccupied: news,
+                  statuses: statuses,
+                  idRepairer: req.query.idRepairer,
+                  ipServer: process.env.IP_SERVER,
+                  user: repairer
+                });
+              }
+            );
+          }
+        );
+      }
+    );
+  });
 });
 
 app.put("/status", urlencodedParser, function(req, res) {
@@ -162,39 +171,47 @@ app.put("/status", urlencodedParser, function(req, res) {
   );
 });
 
-app.get('/login', (req, res) => {
-  res.render('login.html');
-});
-
-app.post('/login', urlencodedParser, (req, res) => {
-  const email = req.body.clientEmail;
-  const password = req.body.clientPassword;
-  auth.authenticate(email, password, (ok) => {
-    console.log(ok);
-    if (!ok) {
-      res.redirect('/login');
+app.get("/login", (req, res) => {
+  auth.isAuthenticated(req, user => {
+    if (!user) {
+      res.render("login.html");
       return;
     }
-    auth.login(email, res, (user) => {
-      console.log('user', user);
+    const last_page = req.cookies["last_page"];
+    console.log('last_page', last_page);
+    if (last_page) {
+      res.clearCookie("last_page");
+      res.redirect(last_page);
+      return;
+    }
+    res.redirect("/");
+  });
+});
+
+app.post("/login", urlencodedParser, (req, res) => {
+  const email = req.body.clientEmail;
+  const password = req.body.clientPassword;
+  auth.authenticate(email, password, ok => {
+    console.log(ok);
+    if (!ok) {
+      
+      return res.redirect("/login");
+    }
+    auth.login(email, res, user => {
+      console.log("user", user);
       if (!user) {
-        console.log('500 error');
-        res.redirect('/login');
+        console.log("500 error");
+        res.redirect("/login");
         return;
       }
-      res.render("successLogin.html", {repairer: user});
+      // res.render("successLogin.html", { repairer: user });
+      const last_page = req.cookies["last_page"];
+      res.clearCookie("last_page");
+      res.redirect(last_page || '/orders');
     });
   });
 });
 
-
-// Заглушка
-
-app.get('/login_test', (req, res) => {
-  auth.isAuthenticated(req, (user) => {
-    if (!user) {
-      return res.redirect('/login');
-    }
-    res.send(`Hello, ${user.nameRepairer}!`);
-  });
+app.get("/logout", (req, res) => {
+  auth.logout(res);
 });

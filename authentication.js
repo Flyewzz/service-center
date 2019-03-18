@@ -10,6 +10,7 @@ module.exports = {
         
         if (!req.cookies['access_token']) {
             callback(null);
+            return;
         }
         const token = req.cookies['access_token'];
         try {
@@ -41,10 +42,12 @@ module.exports = {
                 return;
             }
             bcrypt.compare(password, users[0].password, (err, valid) => {
-                console.log(valid);
+                console.log('valid', valid);
                 if (valid) {
                     callback(true);
+                    return;
                 }
+                callback(false);
             });
         });
     },
@@ -58,16 +61,15 @@ module.exports = {
             }
             const token = jwt.encode(users[0], process.env.SECRET_KEY); // Sign token
             res.cookie('access_token', token, {
-                expires: new Date(Date.now() + 60000)
+                expires: new Date(Date.now() +  5 * 60000), // 5 min expire time
               });
-              callback({
-                  nameRepairer: users[0].nameRepairer,
-              });
+              callback(users[0]);
         });
     },
 
     logout: function(res) {
         res.clearCookie('access_token');
+        res.redirect('/');
     }
 }
 
