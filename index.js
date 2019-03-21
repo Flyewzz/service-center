@@ -1,6 +1,6 @@
 const express = require("express");
 const http = require("http");
-const ejs = require("ejs");
+// const ejs = require("ejs");
 const app = express();
 
 const nunjucks = require("nunjucks");
@@ -12,6 +12,7 @@ const cookieParser = require("cookie-parser");
 // Creating the parser for data application/x-www-form-urlencoded
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
 app.use(express.static(__dirname + "/public"));
+app.use(bodyParser.json());
 app.use(cookieParser());
 
 const auth = require("./authentication");
@@ -21,18 +22,19 @@ nunjucks.configure("./views", {
   express: app
 });
 
-// app.set("view engine", "ejs");
 
 var server = app.listen(8080);
 var io = require("socket.io").listen(server);
 
 var ipServer = require("ip").address(); // Current server IP address in local network
 
+
+
 console.log("Current IP: " + ipServer);
 app.get("/", function(req, res) {
   db.query("SELECT * FROM deviceviews", (err, rows) => {
     auth.isAuthenticated(req, user => {
-      res.render("index.html", { views: rows, user: user });
+      res.status(200).render("index.html", { views: rows, user: user });
     });
   });
 });
@@ -64,7 +66,7 @@ app.post("/orders", urlencodedParser, function(req, res) {
               clientMessage: req.body.clientMessage
             });
           });
-          res.sendFile(__dirname + "/public/successSendOrder.html");
+          res.status(200).sendFile(__dirname + "/public/successSendOrder.html");
         }
       );
     }
@@ -75,7 +77,7 @@ app.get("/orders", function(req, res) {
   auth.isAuthenticated(req, repairer => {
     if (!repairer) {
       res.cookie("last_page", req.url);
-      return res.redirect("/login");
+      return res.status(401).render("login.html");
     }
     db.query(
       "SELECT * FROM service.Orders o " +
@@ -97,7 +99,7 @@ app.get("/orders", function(req, res) {
                     console.log(socket.id + " disconnected");
                   });
                 });
-                res.render("orders.html", {
+                res.status(200).render("orders.html", {
                   orders: orders,
                   unoccupied: news,
                   statuses: statuses,
@@ -145,6 +147,7 @@ app.put("/status", urlencodedParser, function(req, res) {
                 (err, template) => {
                   if (err) {
                     console.log(err);
+                    res.sendStatus(500);
                     return;
                   }
                   var mailOptions = {
@@ -156,9 +159,10 @@ app.put("/status", urlencodedParser, function(req, res) {
                   mailer.sendMail(mailOptions, (err, info) => {
                     if (err) {
                       console.log(err);
+                      res.sendStatus(500);
                       return;
                     }
-                    res.json({ answer: "OK" });
+                    res.status(200).json({ answer: "OK" });
                   });
                 }
               );
@@ -173,35 +177,31 @@ app.put("/status", urlencodedParser, function(req, res) {
 app.get("/login", (req, res) => {
   auth.isAuthenticated(req, user => {
     if (!user) {
-      res.render("login.html");
-      return;
+      return res.status(200).render("login.html");
     }
     const last_page = req.cookies["last_page"];
     console.log('last_page', last_page);
     if (last_page) {
       res.clearCookie("last_page");
-      res.redirect(last_page);
-      return;
+      return res.redirect(last_page);
     }
     res.redirect("/");
   });
 });
 
 app.post("/login", urlencodedParser, (req, res) => {
-  const email = req.body.clientEmail;
-  const password = req.body.clientPassword;
-  auth.authenticate(email, password, ok => {
+  const email = req.body.email;
+  const password = req.body.password;
+  auth.authenticate(email, password, (ok) => {
     console.log(ok);
     if (!ok) {
-      
-      return res.redirect("/login");
+      return res.status(401).render("login.html");
     }
-    auth.login(email, res, user => {
+    auth.login(email, res, (user) => {
       console.log("user", user);
-      if (!user) {
+      if (!user) { // ?
         console.log("500 error");
-        res.redirect("/login");
-        return;
+        return res.status(500).render("login.html");
       }
       // res.render("successLogin.html", { repairer: user });
       const last_page = req.cookies["last_page"];
@@ -214,3 +214,9 @@ app.post("/login", urlencodedParser, (req, res) => {
 app.get("/logout", (req, res) => {
   auth.logout(res);
 });
+
+app.get('/test', (req, res) => {
+res.sendStatus(200);
+});
+
+module.exports = app;

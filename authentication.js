@@ -61,7 +61,7 @@ module.exports = {
             }
             const token = jwt.encode(users[0], process.env.SECRET_KEY); // Sign token
             res.cookie('access_token', token, {
-                expires: new Date(Date.now() +  5 * 60000), // 5 min expire time
+                expires: new Date(Date.now() +  12 * 60 * 60000), // 12 hours expire time
               });
               callback(users[0]);
         });
