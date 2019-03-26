@@ -118,14 +118,22 @@ app.get("/orders", function(req, res) {
 
 app.put("/status", urlencodedParser, function(req, res) {
   var idRepairer;
+  var price;
+  var guarantee;
+  var orderEndDate = '';
   if (req.body.orderStatus == 1) {
     idRepairer = null;
   }
   else {
     idRepairer = req.body.idRepairer;
   }
+  price = req.body.price;
+  guarantee = req.body.guarantee;
+  if (req.body.orderStatus == 3) {
+    orderEndDate = ', orderEndDate = CURDATE()';
+  }
   db.query(
-    "UPDATE Orders SET idStatus = ?, idRepairer = ? WHERE idOrder = ?",
+    "UPDATE Orders SET idStatus = ?, idRepairer = ?" + orderEndDate + " WHERE idOrder = ?",
     [req.body.orderStatus, idRepairer, req.body.idOrder],
     (err, rows) => {
       console.log("Status #" + req.body.idOrder + " was successfully changed!");

@@ -1,7 +1,4 @@
-{% extends 'base.html' %} 
-{% block menu %}
-{% endblock %} 
-{% block tables %}
+{% extends 'base.html' %} {% block menu %} {% endblock %} {% block tables %}
 <div class="limiter">
   <div class="container-table100">
     <div class="wrap-table100">
@@ -24,6 +21,18 @@
                   Device view
                 </th>
                 <th class="cell100 column7" style="text-align: center">
+                  Start Date
+                </th>
+                <th class="cell100 column8" style="text-align: center">
+                  End Date
+                </th>
+                <th class="cell100 column9" style="text-align: center">
+                  Guarantee
+                </th>
+                <th class="cell100 column10" style="text-align: center">
+                  Price
+                </th>
+                <th class="cell100 column11" style="text-align: center">
                   Status
                 </th>
               </tr>
@@ -45,9 +54,27 @@
                 </td>
                 <td class="cell100 column6">{{ unoccupiedOrder.nameView }}</td>
                 <td class="cell100 column7">
+                  {{ unoccupiedOrder.orderStartDate }}
+                </td>
+                <td class="cell100 column8">
+                  {% if unoccupiedOrder.orderEndDate %}
+                  {{ unoccupiedOrder.orderEndDate }}
+                  {% else %} 
+                  <div style="font: bold">-</div>
+                  {% endif %}
+                </td>
+                <td class="cell100 column9">
+                  <input type="checkbox" name="1" id="1" />
+                </td>
+                <td class="cell100 column10">
+                    <div style="text-align: center">{{ unoccupiedOrder.price }} ₽</div>
+                </td>
+                <td class="cell100 column11">
                   <select
                     style="color: {{ unoccupiedOrder.colorStatus }}"
-                    onchange="changeOrderStatus(this, {{ unoccupiedOrder.idOrder }})"
+                    onchange="changeOrderStatus(this, {{
+                      unoccupiedOrder.idOrder
+                    }})"
                   >
                     {% for status in statuses %} {% if (unoccupiedOrder.idStatus
                     == status.idStatus) %}
@@ -72,13 +99,35 @@
                 <td class="cell100 column5">{{ order.clientNumber }}</td>
                 <td class="cell100 column6">{{ order.nameView }}</td>
                 <td class="cell100 column7">
+                    {{ order.orderStartDate }}
+                  </td>
+                  <td class="cell100 column8">
+                    {% if order.orderEndDate %}
+                    {{ order.orderEndDate }}
+                    {% else %} 
+                    <div style="font: bold">-</div>
+                    {% endif %}
+                  </td>
+                  <td class="cell100 column9">
+                    <input type="checkbox" name="1" id="1"
+                    {% if order.guarantee %}
+                    checked
+                    {% endif %} 
+                    />
+                  </td>
+                  <td class="cell100 column10">
+                      <div style="text-align: center">{{ order.price }} ₽</div>
+                  </td>
+                <td class="cell100 column11">
                   <select
                     style="color: {{ order.colorStatus }}"
                     onchange="changeOrderStatus(this, {{ order.idOrder }})"
                   >
                     {% for status in statuses %} {% if (order.idStatus ==
                     status.idStatus) %}
-                    <option selected value="{{ status.idStatus }}">{{ status.nameStatus }}</option>
+                    <option selected value="{{ status.idStatus }}">{{
+                      status.nameStatus
+                    }}</option>
                     {% else %}
                     <option
                       value="{{ status.idStatus }}"
@@ -101,8 +150,7 @@
   </div>
   <div style="margin-bottom: 40%" id="server-message"></div>
 </div>
-{% endblock %} 
-{% block bscripts %}
+{% endblock %} {% block bscripts %}
 <!--===============================================================================================-->
 <!-- <script src="js/main.js"></script> -->
 <script src="/socket.io/socket.io.js"></script>
