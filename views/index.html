@@ -48,6 +48,19 @@
           </tr>
           <tr>
             <td>
+              <select
+                name="city"
+                style="height:30px;width:100%;margin-top:8px;font-size:12px;color:#5a5a5a; line-height:30px;padding-left:10px;"
+                maxlength="100"
+              >
+                {% for city in cities %}
+                <option value="{{ city.idCity }}">{{ city.name }}</option>
+                {% endfor %}
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>
               <input
                 type="tel"
                 name="clientNumber"

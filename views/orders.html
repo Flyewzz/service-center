@@ -157,13 +157,28 @@
 <script>
   	var socket = io.connect('{{ ipServer }}:8080');
   	socket.on('newOrder', (newOrder) => {
+      var orderEndDate;
+      if (newOrder.orderEndDate == null) {
+        orderEndDate = '-';
+      }
+      else {
+        orderEndDate = newOrder.orderEndDate;
+      }
+      var guarantee = '';
+      if (newOrder.guarantee) {
+        guarantee = 'checked';
+      }
   		let htmlNewOrder = "<tr class='row100 body' style='text-align: center'>" +
   													"<td class='cell100 column2'>" + newOrder.idOrder + "</td>" +
   													"<td class='cell100 column3'>" + newOrder.clientName + "</td>" +
   													"<td class='cell100 column4'>" + newOrder.clientEmail + "</td>" +
   													"<td class='cell100 column5'>" + newOrder.clientNumber + "</td>" +
-  													"<td class='cell100 column6'>" + newOrder.view + "</td>" +
-  													"<td class='cell100 column7'>" +
+                            "<td class='cell100 column6'>" + newOrder.view + "</td>" +
+                            "<td class='cell100 column7'>" + newOrder.orderStartDate + "</td>" +
+                            "<td class='cell100 column8'>" + orderEndDate + "</td>" +
+                            "<td class='cell100 column9'><input type='checkbox' " + guarantee + "></td>" +
+                            "<td class='cell100 column10'>" + newOrder.price + "</td>" +
+  													"<td class='cell100 column11'>" +
   														"<select style='color: orange' onchange='changeOrderStatus(this, " + newOrder.idOrder + ")'>" +
   													{% for status in statuses %}
   														{% if (status.idStatus == 1) %}

@@ -22,6 +22,7 @@
     "express-handlebars": "^3.0.2",
     "express-mailer": "^0.3.1",
     "express-session": "^1.15.6",
+    "fcm-node": "^1.4.0",
     "ip": "^1.1.5",
     "jwt-simple": "^0.5.5",
     "mysql": "^2.16.0",
