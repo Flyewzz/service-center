@@ -616,9 +616,28 @@ float:left;
 }
 
 .indexcentertext {
-width:464px;
+width:700px;
 float:left;
 font-size:14px;
+}
+.bigtext {
+    margin-top:10%;
+  font-weight: bold;
+    font-size:30px;
+    margin-bottom: -2%;
+    }
+  
+.userblock {
+  border: #e0e0e0 59px solid;
+  border-bottom: none;
+    background: #e0e0e0;
+    -webkit-box-shadow: 18px 24px 98px -34px rgba(69,69,69,0.6);
+-moz-box-shadow: 18px 24px 98px -34px rgba(69,69,69,0.6);
+box-shadow: 18px 24px 98px -34px rgba(69,69,69,0.6);
+}
+table {
+    table-layout: auto;
+    margin:1% 0 0 4%; 
 }
 
 .indexnewstext {

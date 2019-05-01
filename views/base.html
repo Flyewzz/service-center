@@ -84,13 +84,17 @@ td, body {font-family:arial; font-size:13px;color:#5d5d5d;}
 <div id="phone"><div class="phone"><span>Контактный телефон:</span><br /><font style="font-size:25px;">+3 (8093) <font color="#198ad7">999-66-99</font></font></div></div>
 {% if user %}
 <div>
+		<div class="userblock">	
 <div>{{ user.nameRepairer }}</div>
+
 <div><a href="/orders">Список заказов</a></div>
 <div id='logout'><a href="/logout">Выйти</a></div>
+</div>
 </div>
 {% else %}
 <div id='login'><a href="/login">Войти</a></div>
 {% endif %}
+</div>
 </div>
 <div id="headmenu" class="headmenu">
 <li><a href="/">Главная</a></li>
@@ -152,12 +156,7 @@ td, body {font-family:arial; font-size:13px;color:#5d5d5d;}
 {% endblock %}
 
 {% block tables %}
-<div class="indexnewstext">
-<div class="pad">
-<x>НОВОСТИ</x><br/>
-<div class="indexinfnews"> <div class="ils1">07.04.2013</div> <div class="ils2"><a href="http://appliancerepair.ucoz.com/news/estestvennyj_obekt_prava_predposylki_i_razvitie/2013-04-07-22">Естественный объект ...</a></div> <div style="font-size:12px;">Квантовое состояние создает фронт, tertium nоn datur. По своим философ...</div> </div><div class="indexinfnews"> <div class="ils1">07.04.2013</div> <div class="ils2"><a href="http://appliancerepair.ucoz.com/news/kompleksnyj_reklamnyj_brif_glazami_sovremennikov/2013-04-07-21">Комплексный рекламны...</a></div> <div style="font-size:12px;">Поэтому вещество косвенно определяет предмет деятельности, что часто с...</div> </div>
-</div>
-</div>
+
 {% endblock %}
 <div style="display:none;">
 <!-- <middle> --> 

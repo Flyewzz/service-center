@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=test mocha ./test",
-    "start": "NODE_ENV=dev node index.js",
-    "run": "NODE_ENV=prod node index.js"
+    "test": "cross-env NODE_ENV=test mocha ./test",
+    "start": "cross-env NODE_ENV=dev node index.js",
+    "run": "cross-env NODE_ENV=prod node index.js"
   },
   "author": "",
   "license": "ISC",
@@ -32,5 +32,8 @@
     "passport-local": "^1.0.0",
     "sequelize": "^4.43.0",
     "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "cross-env": "^5.2.0"
   }
 }
