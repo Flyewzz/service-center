@@ -1,0 +1,141 @@
+{% extends 'base.html' %} {% block title %} Прайс-лист {% endblock
+%} {% block content %}
+<div id="indexinf">
+  <div class="indexform">
+    <div class="pad">
+      <h2 style=" font-weith:800; margin:-3% 0 -10%;">ОНЛАЙН ЗАКАЗ</h2><br />
+        
+      <form
+        method="post"
+        action="/orders"
+        name="mform"
+        id="mffmbaLD"
+        style="margin:0"
+      >
+        <table
+          border="0"
+          style="margin-top:20px;"
+          id="table1"
+          cellspacing="0"
+          cellpadding="0"
+        >
+          <tr>
+            <td>
+              <input
+                type="text"
+                name="clientName"
+                size="30"
+                style="height:30px;width:100%;font-size:12px;color:#5a5a5a;background:#fff; line-height:30px;padding-left:10px;"
+                value="Ваше имя"
+                onfocus="if(this.value == 'Ваше имя'){this.value = ''}"
+                onblur="if(this.value == ''){this.value = 'Ваше имя'}"
+                maxlength="70"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input
+                type="email"
+                name="clientEmail"
+                size="30"
+                style="height:30px;width:100%;margin-top:8px;font-size:12px;color:#5a5a5a; line-height:30px;padding-left:10px;"
+                value="Ваш Email"
+                onfocus="if(this.value == 'Ваш Email'){this.value = ''}"
+                onblur="if(this.value == ''){this.value = 'Ваш Email'}"
+                maxlength="70"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <select
+                name="city"
+                style="height:30px;width:100%;margin-top:8px;font-size:12px;color:#5a5a5a; line-height:30px;padding-left:10px;"
+                maxlength="100"
+              >
+                {% for city in cities %}
+                <option value="{{ city.idCity }}">{{ city.name }}</option>
+                {% endfor %}
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input
+                type="tel"
+                name="clientNumber"
+                size="30"
+                style="height:30px;width:100%;margin-top:8px;font-size:12px;color:#5a5a5a; line-height:30px;padding-left:10px;"
+                value="Телефон"
+                onfocus="if(this.value == 'Телефон'){this.value = ''}"
+                onblur="if(this.value == ''){this.value = 'Телефон'}"
+                maxlength="70"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <select
+                name="device_view"
+                style="height:30px;width:100%;margin-top:8px;font-size:12px;color:#5a5a5a; line-height:30px;padding-left:10px;"
+                maxlength="100"
+              >
+                {% for view in views %}
+                <option value="{{ view.idView }}">{{ view.nameView }}</option>
+                {% endfor %}
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <textarea
+                rows="7"
+                name="clientMessage"
+                cols="30"
+                style="height:160px;overflow:hidden;width:100%;margin-top:8px; font-size:12px; color:#5a5a5a; line-height:20px;padding-left:10px;"
+                value="Текст сообщения"
+                onfocus="if(this.value == 'Краткое описание неисправности (не обязательно)'){this.value = ''}"
+                onblur="if(this.value == ''){this.value = 'Краткое описание неисправности (не обязательно)'}"
+              ></textarea>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <br /><input
+                type="submit"
+                style="width:100%;height:35px;margin-top:-9%;"
+                value="Отправить заявку"
+              />
+            </td>
+          </tr>
+        </table>
+      </form>
+    </div>
+  </div>
+
+  <div class="indexcentertext">
+    <div class="pad">
+      <h1 class="bigtext" style="text-align: center">Услуги и цены</h1><br />
+      
+ 
+      <!-- <a href="successSendOrder.html">Copy</a> -->
+    </div>
+    <table style="align-self: center">
+      <thead>
+        <th>Услуга</th>
+        <th>Стоимость (руб.)</th>
+      </thead>
+      <tbody>
+        {% for service in views %}
+        <tr>
+          <td>{{ service.nameView }}</td>
+          <td>{{ service.price }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+  {% endblock %}
+

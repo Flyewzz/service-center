@@ -110,7 +110,7 @@
                     {% endif %}
                   </td>
                   <td class="cell100 column9">
-                    <input type="checkbox" name="1" id="1"
+                    <input type="checkbox" onchange='changeGuaranteeStatus(this, {{ order.idOrder }})'
                     {% if order.guarantee %}
                     checked
                     {% endif %} 
@@ -177,7 +177,7 @@
                             "<td class='cell100 column6'>" + newOrder.view + "</td>" +
                             "<td class='cell100 column7'>" + newOrder.orderStartDate + "</td>" +
                             "<td class='cell100 column8'>" + orderEndDate + "</td>" +
-                            "<td class='cell100 column9'><input type='checkbox' " + guarantee + "></td>" +
+                            "<td class='cell100 column9'><input type='checkbox' onchange='changeGuaranteeStatus(this, " + newOrder.idOrder + ")'  " + guarantee + "></td>" +
                             "<td class='cell100 column10'>" + newOrder.price + "</td>" +
   													"<td class='cell100 column11'>" +
   														"<select style='color: orange' onchange='changeOrderStatus(this, " + newOrder.idOrder + ")'>" +
@@ -213,6 +213,24 @@
   	});
 
     }
+
+    function changeGuaranteeStatus(sel, idOrder) {
+  		$.ajax({
+          				url: '/guarantee',
+          				type: 'PUT',
+          				cache: false,
+          				data: {
+  				    idOrder: idOrder,
+  			},
+          				success: function(data){
+             				$('#server-message').html("<h3 style='color: green;'>Гарантия заказа #" + idOrder + " успешно изменена!</h3>");
+          				},
+          			    error: function(jqXHR, textStatus, err){
+              				alert('text status '+textStatus+', err '+err);
+          				}
+  	});
+
+    }
   	function changeOrderStatus(sel, idOrder) {
   		{% for status in statuses %}
   			if (sel.options[sel.selectedIndex].value == '{{ status.idStatus }}') {
@@ -221,6 +239,7 @@
   				return;
   			}
   		{% endfor %}
-  	}
+    }
+    
 </script>
 {% endblock %}

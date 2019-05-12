@@ -188,6 +188,24 @@ app.put("/status", urlencodedParser, function(req, res) {
   );
 });
 
+
+
+app.put("/guarantee", urlencodedParser, function(req, res) {
+  var idOrder = req.body.idOrder;
+  db.query(
+    "UPDATE Orders SET guarantee = NOT guarantee WHERE idOrder = ?",
+    [idOrder],
+    (err, data) => {
+      if (err) {
+        console.log("Error with updating guarantee was occured", err);
+        res.status(404).end()
+        return
+      }
+      console.log("Guarantee #" + idOrder + " was successfully changed!");
+      res.status(200).json({ answer: "OK" });
+        }
+    );
+});
 app.get("/login", (req, res) => {
   auth.isAuthenticated(req, user => {
     if (!user) {
@@ -234,13 +252,31 @@ app.get("/test", (req, res) => {
   res.sendStatus(200);
 });
 
-app.get('/azino777', (req, res) => {
-  notification.send(message, function(err, response){
+// app.get('/azino777', (req, res) => {
+//   notification.send(message, function(err, response){
+//     if (err) {
+//         console.log("Something has gone wrong!");
+//     } else {
+//         console.log("Successfully sent with response: ", response);
+//     }
+// });
+// });
+
+app.get('/pricelist', (req, res) => {
+  db.query("SELECT * FROM deviceviews", (err, services) => {
     if (err) {
-        console.log("Something has gone wrong!");
-    } else {
-        console.log("Successfully sent with response: ", response);
+      console.log("Error with deviceviews was occured", err);
+      res.status(500).end();
+      return;
     }
-});
+    db.query("SELECT * FROM Cities", (err, cities) => {
+      auth.isAuthenticated(req, user => {
+        res.status(200).render("pricelist.html", { 
+          views: services, 
+          cities: cities,
+          user: user });
+      });
+    });
+  });
 });
 module.exports = app;
